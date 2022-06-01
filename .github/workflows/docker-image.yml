@@ -21,6 +21,32 @@ jobs:
         docker build . -f Dockerfile -t laussma/my-first-image:latest
         docker tag laussma/my-first-image:latest laussma/my-first-image:$GIT_SHA
 
+    - name: Run Trivy vulnerability scanner CRITICAL & HIGH
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'docker.io/laussma/my-first-image:latest'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+
+    - name: Run Trivy vulnerability scanner MEDIUM, LOW & UNKNOWN
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'docker.io/laussma/my-first-image:latest'
+        format: 'table'
+        exit-code: '0'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'LOW,MEDIUM,UNKNOWN'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v1
+      if: always() 
+      with:
+        sarif_file: 'trivy-results.sarif'
+
     - name: Push the Docker image
       run: |
         echo ${{ secrets.DOCKER_PWD }} | docker login --username ${{ secrets.DOCKER_USERNAME }} --password-stdin      
