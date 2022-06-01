@@ -20,7 +20,8 @@ jobs:
         GIT_SHA="$(git rev-parse --short HEAD)"
         docker build . -f Dockerfile -t laussma/my-first-image:latest
         docker tag laussma/my-first-image:latest laussma/my-first-image:$GIT_SHA
+
+    - name: Push the Docker image
+      run: |
         docker push laussma/my-first-image:latest
         docker push laussma/my-first-image:$GIT_SHA
-    
-  
