@@ -1,0 +1,26 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+    - run: |
+        echo ${{ secrets.DOCKER_USERNAME }} | docker login --username ${{ secrets.DOCKER_PWD }} --password-stdin      
+        GIT_SHA="$(git rev-parse --short HEAD)"
+        docker image build -f Dockerfile -t laussma/my-first-image:latest ./
+        docker tag laussma/my-first-image:latest laussma/my-first-image:$GIT_SHA
+        docker push laussma/my-first-image:latest
+        docker push laussma/my-first-image:$GIT-GIT_SHA
+    
+  
